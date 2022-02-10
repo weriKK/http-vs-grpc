@@ -16,14 +16,17 @@ type httpsvc struct {
 	grpcClientConn *grpc.ClientConn
 }
 
-func NewHTTPSvc(port int, otherport int, grpcClient bool) *http.Server {
+func NewHTTPSvc(port int, otherport int, isGrpcClient bool) *http.Server {
 
-	conn, err := grpc.Dial(fmt.Sprintf("127.0.0.1:%d", otherport), grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatalf("failed to create gRPC client connection: %s", err.Error())
+	h := httpsvc{otherport: otherport, isGrpcClient: isGrpcClient}
+
+	if isGrpcClient {
+		var err error
+		h.grpcClientConn, err = grpc.Dial(fmt.Sprintf("127.0.0.1:%d", otherport), grpc.WithTransportCredentials(insecure.NewCredentials()))
+		if err != nil {
+			log.Fatalf("failed to create gRPC client connection: %s", err.Error())
+		}
 	}
-
-	h := httpsvc{otherport: otherport, isGrpcClient: grpcClient, grpcClientConn: conn}
 
 	mux := mux.NewRouter()
 	mux.HandleFunc("/user", h.userDataHandler).Methods("POST")
