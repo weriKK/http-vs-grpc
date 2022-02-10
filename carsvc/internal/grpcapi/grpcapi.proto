@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option go_package = "carsvc/internal/grpcapi";
+package grpcapi;
+
+service CarDataService {
+    rpc GetCarData(CarDataRequest) returns (CarDataResponse) {}
+}
+
+message CarDataRequest {
+    User user = 1;
+}
+
+message User {
+    string first_name = 1;
+    string last_name = 2;
+    string email = 3;
+    string gender = 4;
+}
+
+message Car {
+    string make = 1;
+	string model = 2;
+	string color = 3;
+}
+
+message CarDataResponse {
+    User user = 1;
+    repeated Car cars = 2;
+}
+
